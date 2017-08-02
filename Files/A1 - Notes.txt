@@ -1,0 +1,17 @@
+Considerations:
+
+* Can use startup code for the linked/double linked lists
+* Demo assignment in Saturn/Titan/Jupiter
+
+1) Timing your methods
+	- best to use nano time
+	
+2) Bubblesort methods
+	- Which is better? Timing
+
+3) Prime Numbers - Code
+	- Number of cases = 50,000
+	
+	
+Command:
+	time java BubbleSort! < test1.in
