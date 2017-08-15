@@ -8,7 +8,7 @@ public class LinkedListMultiset<T> extends Multiset<T>
   protected Node nTail;      // Node at the end of the list
   protected int nCount;      // Total number of elements in the list
 
-  // [ADDDED]: Node class, nodes present in the linked list
+  // Node class, nodes present in the linked list
   private class Node {
     private T nValue;        // Value stored at a Node
     private Node nPrev;      // Previous node connected
@@ -35,14 +35,6 @@ public class LinkedListMultiset<T> extends Multiset<T>
     public boolean isMarked() { return marked; }
     public void unMark() { marked = false; }
     public void setMarked() { marked = true; }
-  }
-
-  // [ADDDED]: Function to return whether a match is made
-  private boolean matchItem(T item1, T item2) {
-    if (item1.equals(item2))
-      return true;
-    else
-      return false;
   }
 
   public LinkedListMultiset() {
@@ -78,11 +70,13 @@ public class LinkedListMultiset<T> extends Multiset<T>
     Node currNode = nHead;
     int count = 0;
 
-    for (int i = 0; i < nCount; ++i)
+    while (currNode != null)
     {
-      // Whenever match made with element, increment count by one
-      if (matchItem(currNode.getValue(), item))
+      // Whenever match made with element, increment count and mark the node
+      if (currNode.getValue().equals(item)){
+        currNode.setMarked();
         count++;
+      }
 
       currNode = currNode.getNext();
     }
@@ -98,7 +92,7 @@ public class LinkedListMultiset<T> extends Multiset<T>
     Node nextNode = null;
 
     // [Case 1]: If node to remove matches the first index position (HEAD)
-    if (matchItem(currNode.getValue(), item)) {
+    if (currNode.getValue().equals(item)) {
       // [i]. List is of length 1, empty list
       if (nCount == 1) {
         nHead = null;
@@ -121,7 +115,7 @@ public class LinkedListMultiset<T> extends Multiset<T>
 
       // [ii]. Iterate through rest of nodes to the end
       while (currNode != null) {
-        if (matchItem(currNode.getValue(), item)) {
+        if (currNode.getValue().equals(item)) {
           // When matched, set previous node's next to be deleted node's next
           prevNode = currNode.getPrev();
           prevNode.setNext(currNode.getNext());
@@ -146,6 +140,9 @@ public class LinkedListMultiset<T> extends Multiset<T>
 
   // [USAGE]: Remove all instances of element that matches in the search
   public void removeAll(T item) {
+    /* This is a recursive function, uses search to check for the count of items,
+     * and repeatedly calls removeOne() until search cannot find any more
+     */
     if (search(item) == 0)
       return;
 
@@ -155,55 +152,27 @@ public class LinkedListMultiset<T> extends Multiset<T>
 
   // [USAGE]: Print all unique nodes and their total count in the list
   public void print(PrintStream out) {
-    // ########## OLD PRINT ##########
+    int itemCount = 0;
+
+    // Set all nodes as unmarked (Allows print to be recalled every time)
     Node currNode = nHead;
-
-    StringBuffer str = new StringBuffer();
-
     while (currNode != null) {
-        str.append(currNode.getValue() + " ");
-        currNode = currNode.getNext();
+      currNode.unMark();
+      currNode = currNode.getNext();
     }
 
-    out.println(str.toString());
-
-    // ########## NEW PRINT ##########
-    // Node currNode = nHead;
-    // Node countNode = null;
-    //
-    // int total = 0;
-    // int itemCount = 1;
-    // T key = null;
-    //
-    // while (total != nCount) {
-    //   if (!currNode.isVisited()) {
-    //     key = currNode.getValue();
-    //     countNode = currNode;
-    //     total++;
-    //
-    //     for (int i = total; i < nCount-1; i++) {
-    //       if (matchItem(key, countNode.getValue())){
-    //           countNode.setVisited();
-    //           itemCount++;
-    //           total++;
-    //       }
-    //       countNode = countNode.getNext();
-    //     }
-    //
-    //     currNode.setVisited();
-    //     out.println(key + " " + printDelim + " " + itemCount);
-    //   }
-    //
-    //   itemCount = 1;
-    //   currNode = currNode.getNext();
-    // }
-    //
-    // // Reset all visited nodes for next time when called
-    // currNode = nHead;
-    // for (int i = 0; i < nCount-1; i++) {
-    //   currNode.setNotVisited();
-    //   currNode = currNode.getNext();
-    // }
+    // Move back to the start and iterate to print
+    currNode = nHead;
+    while (currNode != null)
+    {
+      // If node is not marked, find all its copies, mark them and print
+      if(!currNode.isMarked()){
+        itemCount = search(currNode.getValue());
+        out.println(currNode.getValue() + printDelim + itemCount);
+      }
+      // Iterate to next node and repeat
+      currNode = currNode.getNext();
+    }
   } // end of print()
 
 } // end of class LinkedListMultiset
