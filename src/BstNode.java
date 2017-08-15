@@ -1,11 +1,11 @@
 import java.util.*;
 
 class BstNode {
-  T key;
-  Node left;
-  Node right;
+  String key;
+  BstNode left;
+  BstNode right;
 
-  public Node (T key) {
+  public BstNode (String key) {
     this.key = key;
     left = null;
     right = null;
