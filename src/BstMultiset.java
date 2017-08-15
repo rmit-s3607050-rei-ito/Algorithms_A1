@@ -3,21 +3,65 @@ import java.util.*;
 
 public class BstMultiset<T> extends Multiset<T>
 {
+  protected Node mRoot;
+
   public BstMultiset() {
-    // Implement me!
+    this.mRoot = null;
   } // end of BstMultiset()
 
   public void add(T item) {
-    // Implement me!
+    Node newItem = new Node(item);
+
+    if (mRoot == null) {
+      mRoot = newItem;
+      return;
+    }
+
+    Node current = mRoot;
+    Node parent = null;
+
+    while (true) {
+      parent = current;
+      if ((String)item.compareTo(current.key) < 0) {
+        current = current.left;
+        if (current == null) {
+          parent.left = newItem;
+          return;
+        }
+      }
+      else if ((String)item.compareTo(current.key) > 0 ) {
+        current = current.right;
+        if (current == null) {
+          parent.right = newItem;
+          return;
+        }
+      }
+      else {
+
+      }
+    }
   } // end of add()
 
 
   public int search(T item) {
-    // Implement me!
+    int count = 0;
 
-    // default return, please override when you implement this method
-    return 0;
-  } // end of add()
+    Node current = mRoot;
+
+    while (current != null) {
+      if ((String)item.compareTo(current.key) == 0) {
+        count++;
+      }
+      else if (item.compareTo(current.key) < 0) {
+        current = current.left;
+      }
+      else if (item.Comparable(current.key) > 0) {
+        current = current.right;
+      }
+    }
+
+    return count;
+  } // end of search()
 
 
   public void removeOne(T item) {
@@ -31,7 +75,7 @@ public class BstMultiset<T> extends Multiset<T>
 
 
   public void print(PrintStream out) {
-    // Implement me!
+
   } // end of print()
 
 } // end of class BstMultiset
