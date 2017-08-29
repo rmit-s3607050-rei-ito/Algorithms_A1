@@ -1,6 +1,6 @@
 import java.io.*;
 import java.util.*;
-
+import java.lang.*;
 
 /**
  * Framework to test the multiset implementations.
@@ -24,6 +24,19 @@ public class MultisetTester
     System.exit(1);
   } // end of usage
 
+  public static void saveExTime(String fileName, String type, long time) {
+    try {
+      FileWriter output = new FileWriter(fileName, true);
+      output.write(type + ": " + time + "\n");
+      output.close();
+    }
+    catch(FileNotFoundException ex) {
+      System.err.println("[ERROR] - File not found: " + fileName);
+    }
+    catch(IOException ex) {
+      System.err.println("[ERROR] - Unable to read file: " + fileName);
+    }
+  }
 
   /**
    * Process the operation commands coming from inReader, and updates the multiset according to the operations.
@@ -116,9 +129,10 @@ public class MultisetTester
    * Main method.  Determines which implementation to test.
    */
   public static void main(String[] args) {
+    long start = System.nanoTime();
 
     // check number of command line arguments
-    if (args.length > 2 || args.length < 1) {
+    if (args.length > 3 || args.length < 1) {
       System.err.println("Incorrect number of arguments.");
       usage(progName);
     }
@@ -126,8 +140,13 @@ public class MultisetTester
     String implementationType = args[0];
 
     String searchOutFilename = null;
-    if (args.length == 2) {
+    if (args.length == 3) {
       searchOutFilename = args[1];
+    }
+
+    String timeOutFilename = null;
+    if (args.length == 3) {
+      searchOutFilename = args[2];
     }
 
 
@@ -169,6 +188,8 @@ public class MultisetTester
       System.err.println(e.getMessage());
     }
 
+    long end = System.nanoTime();
+    saveExTime(timeOutFilename, implementationType, (end-start));
   } // end of main()
 
 } // end of class MultisetTester
