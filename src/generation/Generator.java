@@ -100,7 +100,7 @@ public class Generator {
     }
 
     for (int i = 0; i < numCommands; i++) {
-      if (random)
+      if (random) // Get a random command
         command = getRandomFromList(commands);
 
       word = getRandomFromList(searchWords);
@@ -129,36 +129,40 @@ public class Generator {
     List<String> wordSet = new ArrayList<String>();
 
     String randWord = "";
-
     String outFileName = "";
     int size = 0;
     String commandType = "";
     int numCommands = 0;
 
-    // check number of command line arguments
+    // Check number of command line arguments
     if (args.length != numRequiredArgs) {
       System.err.println("Incorrect number of arguments.");
       printUsage(progName);
     }
 
+    // Store command line args are variables
     outFileName = args[0];
     size = Integer.parseInt(args[1]);
     commandType = args[2];
     numCommands = Integer.parseInt(args[3]);
 
+    // Read in dictionary of all possible words
     loadDictionary(dictionaryList);
 
-    // [1]. Save in default adds into the output based on the size
+    // [1]. Save in default adds statements into the output based on the size
     for (int i = 0; i < size; i++) {
       randWord = getRandomFromList(dictionaryList);
       outputList.add(add + randWord);
-      wordSet.add(randWord);
+      wordSet.add(randWord);          // Add all possible words into wordSet
     }
 
+    // [2]. Add in extra depending on request passed into command line
     addExtraCommands(outputList, wordSet, commands, commandType, numCommands);
+    // [3]. Append print and quit onto the end
     outputList.add(print);
     outputList.add(quit);
 
+    // [4]. Save all content into the specified file
     saveOutput(outputList, outFileName);
   }
 }
