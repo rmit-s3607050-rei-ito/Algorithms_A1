@@ -13,28 +13,28 @@ public class LinkedListMultiset<T> extends Multiset<T>
     private T nValue;        // Value stored at a Node
     private Node nPrev;      // Previous node connected
     private Node nNext;      // Next node connected
-    private boolean marked;  // Used for printing, when node visited, mark it
+    private int count;       // Used for counting duplicate data entries
 
     // Node constructor
     public Node(T value) {
       nValue = value;
       nPrev = null;
       nNext = null;
-      marked = false;
+      count = 1;
     }
 
     // Node Getters and Setters
     public T getValue() { return nValue; }
+    public int getCount() { return count; }
     public Node getPrev() { return nPrev; }
     public Node getNext() { return nNext; }
 
-    public void setValue(T value) { nValue = value; }
-    public void setPrev(Node prev)  { nPrev = prev; }
-    public void setNext(Node next)  { nNext = next; }
+    public void setValue(T value)  { nValue = value; }
+    public void setPrev(Node prev) { nPrev = prev; }
+    public void setNext(Node next) { nNext = next; }
 
-    public boolean isMarked() { return marked; }
-    public void unMark() { marked = false; }
-    public void setMarked() { marked = true; }
+    public void addCount() { count++; }
+    public void reduceCount() { count--; }
   }
 
   public LinkedListMultiset() {
@@ -47,22 +47,32 @@ public class LinkedListMultiset<T> extends Multiset<T>
   // [USAGE]: Adds an item to the start of the list
   public void add(T item) {
     Node newNode = new Node(item);
+    Node currNode = nHead;
 
-    // If list is Empty, add node and set it as both head and tail
+    // [1]. List is Empty, add node and set it as both head and tail
     if (nHead == null) {
       nHead = newNode;
       nTail = newNode;
     }
 
-    // List is populated, add it to the start of the list only setting as head
+    // [2]. List is populated
     else {
+      // i) check if it is already in the list, if so increment count then exit
+      while (currNode != null) {
+        if (currNode.getValue().equals(item)) {
+          currNode.addCount();
+          return;
+        }
+        currNode = currNode.getNext();
+      }
+
+      // ii) otherwise add it to the start of the list setting it as head
       newNode.setNext(nHead);	  // Set new node's next to be previous node at head
       nHead.setPrev(newNode); 	// Set old head node's previous to be the new node
       nHead = newNode;			    // Set head to be at the new node
     }
 
-    // Increase total count of nodes
-    nCount += 1;
+    nCount += 1;                // Increase total count of nodes
   } // end of add()
 
   // [USAGE]: Search the count of instances of element in the multiset, return result
@@ -70,14 +80,12 @@ public class LinkedListMultiset<T> extends Multiset<T>
     Node currNode = nHead;
     int count = 0;
 
-    while (currNode != null)
-    {
-      // Whenever match made with element, increment count and mark the node
-      if (currNode.getValue().equals(item)){
-        currNode.setMarked();
-        count++;
+    while (currNode != null) {
+      // Whenever match made with element, obtain count then immediately exit to return
+      if (currNode.getValue().equals(item)) {
+        count = currNode.getCount();
+        break;
       }
-
       currNode = currNode.getNext();
     }
 
@@ -88,27 +96,46 @@ public class LinkedListMultiset<T> extends Multiset<T>
   // [USAGE]: Removes first instance of element when match is found
   public void removeOne(T item) {
     Node currNode = nHead;
+
+    // Loop through the entire linked list
+    while (currNode != null) {
+      // When item is found check its count
+      if (currNode.getValue().equals(item)) {
+        if (currNode.getCount() > 1) { // More than one item, simply reduce count
+          currNode.reduceCount();
+          return;
+        } else { // Exactly one, remove the node itself
+          removeAll(item);
+          return;
+        }
+      }
+      currNode = currNode.getNext();
+    }
+  } // end of removeOne()
+
+  // [USAGE]: Remove all instances of element that matches in the search
+  public void removeAll(T item) {
+    Node currNode = nHead;
     Node prevNode = null;
     Node nextNode = null;
 
     // [Case 1]: If node to remove matches the first index position (HEAD)
     if (currNode.getValue().equals(item)) {
-      // [i]. List is of length 1, empty list
+      // [ii]. List is of length 1, empty list
       if (nCount == 1) {
         nHead = null;
         nTail = null;
       }
-      // [i]. List length > 1, remove connection to first node
+      // [iii]. List length > 1, remove connection to first node
       else {
         nHead = currNode.getNext(); // node after deleted node is now the head node
         nHead.setPrev(null);        // remove link to deleted node
       }
-
-      nCount--;
+      nCount--; // Reduce total number of nodes
       return;
     }
 
-    // [Case 2]: Node to remove is not at head (middle and end node)
+    // [Case 2]: Node to remove is not at head (middle or end node)
     else {
       // [i]. Start at second node
       currNode = currNode.getNext();
@@ -128,49 +155,23 @@ public class LinkedListMultiset<T> extends Multiset<T>
             nextNode = currNode.getNext();
             nextNode.setPrev(prevNode);
           }
-
-          nCount--;
+          nCount--; // Reduce total node count
           return;
         }
         // Continue iterating through list if match is not found
         currNode = currNode.getNext();
       }
     }
-  } // end of removeOne()
-
-  // [USAGE]: Remove all instances of element that matches in the search
-  public void removeAll(T item) {
-    /* This is a recursive function, uses search to check for the count of items,
-     * and repeatedly calls removeOne() until search cannot find any more
-     */
-    if (search(item) == 0)
-      return;
-
-    removeOne(item);
-    removeAll(item);
   } // end of removeAll()
 
-  // [USAGE]: Print all unique nodes and their total count in the list
+  // [USAGE]: Print all nodes and their total count in the list
   public void print(PrintStream out) {
-    int itemCount = 0;
-
-    // Set all nodes as unmarked (Allows print to be recalled every time)
+    /* Since their count is stored internally within them, we can simply print out
+     * the count value */
     Node currNode = nHead;
     while (currNode != null) {
-      currNode.unMark();
-      currNode = currNode.getNext();
-    }
+      out.println(currNode.getValue() + printDelim + currNode.getCount());
 
-    // Move back to the start and iterate to print
-    currNode = nHead;
-    while (currNode != null)
-    {
-      // If node is not marked, find all its copies, mark them and print
-      if(!currNode.isMarked()){
-        itemCount = search(currNode.getValue());
-        out.println(currNode.getValue() + printDelim + itemCount);
-      }
-      // Iterate to next node and repeat
       currNode = currNode.getNext();
     }
   } // end of print()
