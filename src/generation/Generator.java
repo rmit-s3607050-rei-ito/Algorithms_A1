@@ -16,8 +16,8 @@ public class Generator {
   protected static final String removeOne = "ro ";
   protected static final String removeAll = "ra ";
   protected static final String search = "s ";
-  protected static final String print = "p ";
 
+  protected static final String print = "p";
   protected static final String quit = "q";
 
   protected static final int numRequiredArgs = 4;
@@ -120,7 +120,7 @@ public class Generator {
 
   public static void main(String[] args) {
     // Fixed size list with all commands
-    List<String> commands = Arrays.asList(add, removeOne, removeAll, search, print);
+    List<String> commands = Arrays.asList(add, removeOne, removeAll, search);
     List<String> outputList = new ArrayList<String>();
     List<String> dictionaryList = new ArrayList<String>();
 
@@ -151,6 +151,7 @@ public class Generator {
     }
 
     appendExtraCommands(outputList, dictionaryList, commands, commandType, numCommands);
+    outputList.add(print);
     outputList.add(quit);
 
     saveOutput(outputList, outFileName);
