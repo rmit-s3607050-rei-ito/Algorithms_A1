@@ -132,12 +132,13 @@ def main():
             sSearchOutputFile = os.path.join(sTestName + "-" + sImpl + ".search.out")
             sExpectedFile = os.path.splitext(sInFile)[0] + ".exp"
             sSearchExpectedFile = os.path.splitext(sInFile)[0] + ".search.exp"
+            stimeOutputFile = os.path.join(sTestName + "-" + sImpl + ".time.out")
 
             # check if expected files exist
 
             with open(sOutputFile, "w") as fOut:
                 #sCommand = os.path.join(sCodeDir, sExec + " " + sImpl)
-                sCommand = os.path.join("java " + sExec + " " + sImpl + " " + sSearchOutputFile)
+                sCommand = os.path.join("java " + sExec + " " + sImpl + " " + sSearchOutputFile + " " + stimeOutputFile)
                 # following command used by my dummy code to test possible output (don't replace above)
 #                 lCommand = os.path.join(sCodeDir, sExec + " " + sExpectedFile + ".test")
                 if bVerbose:
