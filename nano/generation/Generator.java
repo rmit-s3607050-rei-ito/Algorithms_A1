@@ -6,6 +6,7 @@
 
 import java.io.*;
 import java.util.*;
+import java.lang.*;
 
 public class Generator {
   protected static final String progName = "Generator";
@@ -70,12 +71,90 @@ public class Generator {
     return randomString;
   }
 
-  public static void addExtraCommands(List<String> outList, List<String> searchWords,
-                                      List<String> commands, String commandType,
-                                      int numCommands) {
+  // [USAGE]: Runs scenario1 with additions/removals (as specified in assignment specs)
+  public static void addScenarioOne(List<String> outList, List<String> searchWords,
+                                    int numCommands) {
+    Random rand = new Random();
+    int min = 40;
+    int max = 60;
+    double addRatio = (rand.nextInt(max - min + 1) + min) / 100.0;
+    int numAdd = (int)(numCommands * addRatio);
+    int numRemove = numCommands - numAdd;
+
+    List<String> removals = Arrays.asList(removeOne, removeAll);
+    List<String> ratioList = new ArrayList<String>();
     String command = "";
     String word = "";
-    String randCommand = "";
+
+    // Add add commands
+    command = add;
+    for (int i = 0; i < numAdd; i++) {
+      word = getRandomFromList(searchWords);
+      ratioList.add(command + word);
+    }
+    // Add removal commands, will randomly select between ro and ra
+    for (int i = 0; i < numRemove; i++) {
+      word = getRandomFromList(searchWords);
+      command = getRandomFromList(removals);
+
+      ratioList.add(command + word);
+    }
+
+    // Shuffle all elements in the temporary generated list
+    Collections.shuffle(ratioList);
+
+    // Append all these elements onto main list
+    outList.addAll(ratioList);
+  }
+
+  // [USAGE]: Runs scenario2 with searches (as specified in assignment specs)
+  public static void addScenarioTwo(List<String> outList, List<String> searchWords,
+                                    int numCommands) {
+    // Preset ratio of (60%,20%,20%) = (search, remove, add)
+    double sRatio = 0.6;       double aRatio = 0.2;       double rRatio = 0.2;
+
+    int numSearch = (int) (sRatio * numCommands);
+    int numAdd = (int) (aRatio * numCommands);
+    int numRemove = (int) (aRatio * numCommands);
+
+    List<String> removals = Arrays.asList(removeOne, removeAll);
+    List<String> ratioList = new ArrayList<String>();
+    String command = "";
+    String word = "";
+
+    // Add search commands
+    command = search;
+    for (int i = 0; i < numSearch; i++) {
+      word = getRandomFromList(searchWords);
+      ratioList.add(command + word);
+    }
+    // Add add commands
+    command = add;
+    for (int i = 0; i < numAdd; i++) {
+      word = getRandomFromList(searchWords);
+      ratioList.add(command + word);
+    }
+    // Add removal commands, will randomly select between ro and ra
+    for (int i = 0; i < numRemove; i++) {
+      word = getRandomFromList(searchWords);
+      command = getRandomFromList(removals);
+
+      ratioList.add(command + word);
+    }
+
+    // Shuffle all elements in the temporary generated list
+    Collections.shuffle(ratioList);
+
+    // Append all these elements onto main list
+    outList.addAll(ratioList);
+  }
+
+  // [USAGE]: Append custom scenario onto the base adds
+  public static void addCustomScenario(List<String> outList, List<String> searchWords,
+                                       List<String> commands, String commandType,
+                                       int numCommands) {
+    String command = "";
+    String word = "";
     boolean random = false;
 
     switch(commandType) {
@@ -113,7 +192,7 @@ public class Generator {
     System.err.println(" 1. <outputName> [Filename for output file (saved as .in)]");
     System.err.println(" 2. <multisetSize> [Number of elements by default in the multiset]");
     System.err.println(" 3. <commandType> [Type of commands to append]");
-    System.err.println("    <commandType> = < add | removeOne | removeAll | search | random >");
+    System.err.println("    <commandType> = < add | removeOne | removeAll | search | random | scenario1 | scenario2 >");
     System.err.println(" 4. <numCommands> [Number of extra commands to append]");
     System.exit(1);
   } // end of usage
@@ -157,7 +236,15 @@ public class Generator {
     }
 
     // [2]. Add in extra depending on request passed into command line
-    addExtraCommands(outputList, wordSet, commands, commandType, numCommands);
+      // [A]. Using fluctuating remove and adds
+    if (commandType.compareTo("scenario1") == 0)
+      addScenarioOne(outputList, wordSet, numCommands);
+    // [B]. Using a ratio of search, remove and add
+    else if (commandType.compareTo("scenario2") == 0)
+      addScenarioTwo(outputList, wordSet, numCommands);
+    // [C]. Custom scenarios
+    else
+      addCustomScenario(outputList, wordSet, commands, commandType, numCommands);
     // [3]. Append print and quit onto the end
     outputList.add(print);
     outputList.add(quit);
