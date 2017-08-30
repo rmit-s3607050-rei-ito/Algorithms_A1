@@ -138,7 +138,8 @@ def main():
 
             with open(sOutputFile, "w") as fOut:
                 #sCommand = os.path.join(sCodeDir, sExec + " " + sImpl)
-                sCommand = os.path.join("java " + sExec + " " + sImpl + " " + sSearchOutputFile + " " + stimeOutputFile)
+                # RUN JAVA COMMAND
+                sCommand = os.path.join("java " + sExec + " " + sImpl + " /tests/" + sSearchOutputFile + " /tests/" + stimeOutputFile)
                 # following command used by my dummy code to test possible output (don't replace above)
 #                 lCommand = os.path.join(sCodeDir, sExec + " " + sExpectedFile + ".test")
                 if bVerbose:
