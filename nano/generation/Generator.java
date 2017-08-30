@@ -70,11 +70,11 @@ public class Generator {
     return randomString;
   }
 
-  public static void appendExtraCommands(List<String> outList,
-                                         List<String> dictList, List<String> commands,
-                                         String commandType, int numCommands){
+  public static void addExtraCommands(List<String> outList, List<String> searchWords,
+                                      List<String> commands, String commandType,
+                                      int numCommands) {
     String command = "";
-    String randWord = "";
+    String word = "";
     String randCommand = "";
     boolean random = false;
 
@@ -100,11 +100,11 @@ public class Generator {
     }
 
     for (int i = 0; i < numCommands; i++) {
-      if (random)
+      if (random) // Get a random command
         command = getRandomFromList(commands);
 
-      randWord = getRandomFromList(dictList);
-      outList.add(command + randWord);
+      word = getRandomFromList(searchWords);
+      outList.add(command + word);
     }
   }
 
@@ -113,7 +113,7 @@ public class Generator {
     System.err.println(" 1. <outputName> [Filename for output file (saved as .in)]");
     System.err.println(" 2. <multisetSize> [Number of elements by default in the multiset]");
     System.err.println(" 3. <commandType> [Type of commands to append]");
-    System.err.println("    <commandType> = < add | removeOne | removeAll | search | print | random >");
+    System.err.println("    <commandType> = < add | removeOne | removeAll | search | random >");
     System.err.println(" 4. <numCommands> [Number of extra commands to append]");
     System.exit(1);
   } // end of usage
@@ -121,43 +121,48 @@ public class Generator {
   public static void main(String[] args) {
     // Fixed size list with all commands
     List<String> commands = Arrays.asList(add, removeOne, removeAll, search);
+    // Overall output to save to file
     List<String> outputList = new ArrayList<String>();
+    // Dictionary for words that can be selected
     List<String> dictionaryList = new ArrayList<String>();
+    // Words that have been picked from the dictionary (used for search)
+    List<String> wordSet = new ArrayList<String>();
 
     String randWord = "";
-
     String outFileName = "";
     int size = 0;
     String commandType = "";
     int numCommands = 0;
 
-    // check number of command line arguments
+    // Check number of command line arguments
     if (args.length != numRequiredArgs) {
       System.err.println("Incorrect number of arguments.");
       printUsage(progName);
     }
 
+    // Store command line args are variables
     outFileName = args[0];
     size = Integer.parseInt(args[1]);
     commandType = args[2];
     numCommands = Integer.parseInt(args[3]);
 
+    // Read in dictionary of all possible words
     loadDictionary(dictionaryList);
 
-    // [1]. Save in default adds into the output based on the size
+    // [1]. Save in default adds statements into the output based on the size
     for (int i = 0; i < size; i++) {
       randWord = getRandomFromList(dictionaryList);
       outputList.add(add + randWord);
+      wordSet.add(randWord);          // Add all possible words into wordSet
     }
 
-    appendExtraCommands(outputList, dictionaryList, commands, commandType, numCommands);
+    // [2]. Add in extra depending on request passed into command line
+    addExtraCommands(outputList, wordSet, commands, commandType, numCommands);
+    // [3]. Append print and quit onto the end
     outputList.add(print);
     outputList.add(quit);
 
+    // [4]. Save all content into the specified file
     saveOutput(outputList, outFileName);
-    // [FINAL]: Get all content from output list and save it to the output file
-    // for (String word : outputContents) {
-    //   System.out.println(word);
-    // }
   }
 }

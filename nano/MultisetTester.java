@@ -139,15 +139,9 @@ public class MultisetTester
 
     String implementationType = args[0];
 
-    String searchOutFilename = null;
-    if (args.length == 3) {
-      searchOutFilename = args[1];
-    }
+    String searchOutFilename = args[1];
 
-    String timeOutFilename = null;
-    if (args.length == 3) {
-      searchOutFilename = args[2];
-    }
+    String timeOutFilename = args[2];
 
 
     // determine which implementation to test
