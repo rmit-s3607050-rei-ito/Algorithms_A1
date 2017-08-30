@@ -24,10 +24,10 @@ public class MultisetTester
     System.exit(1);
   } // end of usage
 
-  public static void saveExTime(String fileName, String type, long time) {
+  public static void saveExTime(String fileName, long time) {
     try {
       FileWriter output = new FileWriter(fileName, true);
-      output.write(type + ": " + time + "\n");
+      output.write(time + "\n");
       output.close();
     }
     catch(FileNotFoundException ex) {
@@ -47,7 +47,7 @@ public class MultisetTester
    *
    * @throws IOException If there is an exception to do with I/O.
    */
-  public static void processOperations(BufferedReader inReader, PrintWriter searchOutWriter, Multiset<String> multiset)
+  public static void processOperations(BufferedReader inReader, PrintWriter searchOutWriter, Multiset<String> multiset, String file)
     throws IOException
   {
     String line;
@@ -56,6 +56,8 @@ public class MultisetTester
 
     // continue reading in commands until we either receive the quit signal or there are no more input commands
     while (!bQuit && (line = inReader.readLine()) != null) {
+      long intStart;
+      long intEnd;
       String[] tokens = line.split(" ");
 
       // check if there is at least an operation command
@@ -65,13 +67,16 @@ public class MultisetTester
         continue;
       }
 
-      String command = tokens[0];
+      String command = tokens[0].toUpperCase();
       // determine which operation to execute
-      switch (command.toUpperCase()) {
+      switch (command) {
         // add
         case "A":
           if (tokens.length == 2) {
+            intStart = System.nanoTime();
             multiset.add(tokens[1]);
+            intEnd = System.nanoTime();
+            saveExTime(file, (intEnd-intStart));
           }
           else {
             System.err.println(lineNum + ": not enough tokens.");
@@ -80,8 +85,11 @@ public class MultisetTester
         // search
         case "S":
           if (tokens.length == 2) {
+            intStart = System.nanoTime();
             int foundNumber = multiset.search(tokens[1]);
             searchOutWriter.println(tokens[1] + " " + foundNumber);
+            intEnd = System.nanoTime();
+            saveExTime(file, (intEnd-intStart));
           }
           else {
             // we print -1 to indicate error for automated testing
@@ -92,7 +100,10 @@ public class MultisetTester
         // remove one instance
         case "RO":
           if (tokens.length == 2) {
+            intStart = System.nanoTime();
             multiset.removeOne(tokens[1]);
+            intEnd = System.nanoTime();
+            saveExTime(file, (intEnd-intStart));
           }
           else {
             System.err.println(lineNum + ": not enough tokens.");
@@ -101,7 +112,10 @@ public class MultisetTester
         // remove all instances
         case "RA":
           if (tokens.length == 2) {
+            intStart = System.nanoTime();
             multiset.removeAll(tokens[1]);
+            intEnd = System.nanoTime();
+            saveExTime(file, (intEnd-intStart));
           }
           else {
             System.err.println(lineNum + ": not enough tokens.");
@@ -109,19 +123,25 @@ public class MultisetTester
           break;
         // print
         case "P":
+          intStart = System.nanoTime();
           multiset.print(outStream);
+          intEnd = System.nanoTime();
+          saveExTime(file, (intEnd-intStart));
           break;
         // quit
         case "Q":
+          intStart = System.nanoTime();
           bQuit = true;
+          intEnd = System.nanoTime();
+          saveExTime(file, (intEnd-intStart));
           break;
         default:
           System.err.println(lineNum + ": Unknown command.");
       }
 
       lineNum++;
-    }
 
+    }
   } // end of processOperations()
 
 
@@ -129,20 +149,21 @@ public class MultisetTester
    * Main method.  Determines which implementation to test.
    */
   public static void main(String[] args) {
-    long start = System.nanoTime();
+    long pStart = System.nanoTime();
 
     // check number of command line arguments
-    if (args.length > 3 || args.length < 1) {
+    if (args.length > 4 || args.length < 1) {
       System.err.println("Incorrect number of arguments.");
       usage(progName);
     }
 
     String implementationType = args[0];
 
-    String searchOutFilename = args[1];
+    String searchOutFilename = "tests/"+args[1];
 
-    String timeOutFilename = args[2];
+    String timeOutFilename = "tests/"+args[2];
 
+    String timeIntOutFilename = "tests/"+args[3];
 
     // determine which implementation to test
     Multiset<String> multiset = null;
@@ -177,13 +198,12 @@ public class MultisetTester
         searchOutWriter = new PrintWriter(new FileWriter(searchOutFilename), true);
       }
       // process the operations
-      processOperations(inReader, searchOutWriter, multiset);
+      processOperations(inReader, searchOutWriter, multiset, timeIntOutFilename);
     } catch (IOException e) {
       System.err.println(e.getMessage());
     }
 
-    long end = System.nanoTime();
-    saveExTime(timeOutFilename, implementationType, (end-start));
+    long pEnd = System.nanoTime();
+    saveExTime(timeOutFilename, (pEnd-pStart));
   } // end of main()
-
 } // end of class MultisetTester
