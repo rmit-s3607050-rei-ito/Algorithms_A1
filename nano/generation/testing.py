@@ -129,18 +129,18 @@ def main():
             sTestName = os.path.splitext(os.path.basename(sInFile))[0]
             #sOutputFile = os.path.join(sCodeDir, sTestName + "-" + sImpl + ".out")
             sOutputFile = os.path.join("tests/" + sTestName + "-" + sImpl + ".out")
-            sSearchOutputFile = os.path.join(sTestName + "-" + sImpl + ".search.out")
+            #sSearchOutputFile = os.path.join(sTestName + "-" + sImpl + ".search.out")
             sExpectedFile = os.path.splitext(sInFile)[0] + ".exp"
             sSearchExpectedFile = os.path.splitext(sInFile)[0] + ".search.exp"
             sTimeOutputFile = os.path.join(sTestName + "-" + sImpl + ".time.out")
-            sTimeIncOutputFile = os.path.join(sTestName + "-" + sImpl + ".timeInt.out")
+            #sTimeIncOutputFile = os.path.join(sTestName + "-" + sImpl + ".timeInt.out")
 
             # check if expected files exist
 
             with open(sOutputFile, "w") as fOut:
                 #sCommand = os.path.join(sCodeDir, sExec + " " + sImpl)
                 # RUN JAVA COMMAND
-                sCommand = os.path.join("java " + sExec + " " + sImpl + " " + sSearchOutputFile + " " + sTimeOutputFile + " " + sTimeIncOutputFile)
+                sCommand = os.path.join("java " + sExec + " " + sImpl + " " + sTimeOutputFile)
                 # following command used by my dummy code to test possible output (don't replace above)
 #                 lCommand = os.path.join(sCodeDir, sExec + " " + sExpectedFile + ".test")
                 if bVerbose:
