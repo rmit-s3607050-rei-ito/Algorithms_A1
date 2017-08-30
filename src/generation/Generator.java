@@ -157,6 +157,8 @@ public class Generator {
     }
 
     // [2]. Add in extra depending on request passed into command line
+    // [A]
+    // [B]. Every other combination
     addExtraCommands(outputList, wordSet, commands, commandType, numCommands);
     // [3]. Append print and quit onto the end
     outputList.add(print);
